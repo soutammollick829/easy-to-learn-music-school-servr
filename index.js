@@ -29,7 +29,7 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-
+// TOTAL COLLECTION HERE.......
     const popularClassCollection = client
       .db("musicSchool")
       .collection("populerClass");
@@ -38,11 +38,21 @@ async function run() {
       .db("musicSchool")
       .collection("instructors");
 
+    const selectedClassClassCollection = client
+      .db("musicSchool")
+      .collection("selectedClass");
+
     // popular classes get api
     app.get("/populer-class", async (req, res) => {
       const result = await popularClassCollection.find().toArray();
       res.send(result);
     });
+    // selected class api
+    app.post("/selected-class" , async(req,res)=>{
+      const item = req.body;
+      const result = await selectedClassClassCollection.insertOne(item);
+      res.send(result);
+    })
     // instructors get api
     app.get("/instructors", async (req, res) => {
       const result = await instructorsClassCollection.find().toArray();
