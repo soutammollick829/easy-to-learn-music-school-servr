@@ -1,6 +1,7 @@
 const express = require("express");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
+const jwt = require('jsonwebtoken');
 require("dotenv").config();
 const cors = require("cors");
 const port = process.env.PORT || 5000;
@@ -47,9 +48,35 @@ async function run() {
       .collection("users");
 
       // users api
+
+      app.get("/users", async(req,res)=>{
+        const result = await usersClassCollection.find().toArray();
+        res.send(result);
+      })
+
       app.post("/users" , async(req,res)=>{
         const item = req.body;
         const result = await usersClassCollection.insertOne(item);
+        res.send(result);
+      })
+
+// ADMIN RELATED API....
+      app.patch("/users/admin/:id", async(req,res) =>{
+        const id = req.params.id;
+        const filter = {_id: new ObjectId(id)};
+        const updateDoc = {
+          $set:{
+            role: 'admin'
+          }
+        }
+        const result = await usersClassCollection.updateOne(filter,updateDoc);
+        res.send(result);
+      })
+
+      app.delete("/users/admin/:id", async(req,res)=>{
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)};
+        const result = await usersClassCollection.deleteOne(query);
         res.send(result);
       })
 
