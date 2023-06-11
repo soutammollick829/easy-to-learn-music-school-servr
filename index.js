@@ -1,5 +1,5 @@
 const express = require("express");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 require("dotenv").config();
 const cors = require("cors");
@@ -61,6 +61,13 @@ async function run() {
     app.post("/selected-class" , async(req,res)=>{
       const item = req.body;
       const result = await selectedClassClassCollection.insertOne(item);
+      res.send(result);
+    })
+
+    app.delete("/selected-class/:id", async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await selectedClassClassCollection.deleteOne(query);
       res.send(result);
     })
     // instructors get api
