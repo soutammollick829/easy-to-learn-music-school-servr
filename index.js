@@ -53,6 +53,21 @@ async function run() {
         const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'})
         res.send({token});
       })
+      const verifyJWT = (req,res,next) =>{
+        const authorization = req.headers.authorization;
+        if(!authorization){
+          return res.status(401).send({error: true, message: 'unauthorized access'})
+        }
+        const token = authorization.split(' ')[1];
+
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) =>{
+          if(err){
+            return res.status(403).send({error: true, message: 'unauthorized access'})
+          }
+          req.decoded = decoded;
+          next(); 
+        })
+      }
       // users api
 
       app.get("/users", async(req,res)=>{
@@ -92,11 +107,17 @@ async function run() {
       res.send(result);
     });
     // selected class api
-    app.get("/selected-class", async(req, res)=>{
+    app.get("/selected-class",verifyJWT, async(req, res)=>{
       const email = req.query.email;
       if(!email){
         res.send([]);
       }
+
+      const decodedEmail = req.decoded.email;
+      if(email !== decodedEmail){
+        return res.status(403).send({error: true, message: 'unauthorized access'})
+      }
+
       const query = {email: email};
       const result = await selectedClassClassCollection.find(query).toArray();
       res.send(result);
