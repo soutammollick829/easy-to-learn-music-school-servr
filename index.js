@@ -42,6 +42,17 @@ async function run() {
       .db("musicSchool")
       .collection("selectedClass");
 
+    const usersClassCollection = client
+      .db("musicSchool")
+      .collection("users");
+
+      // users api
+      app.post("/users" , async(req,res)=>{
+        const item = req.body;
+        const result = await usersClassCollection.insertOne(item);
+        res.send(result);
+      })
+
     // popular classes get api
     app.get("/populer-class", async (req, res) => {
       const result = await popularClassCollection.find().toArray();
