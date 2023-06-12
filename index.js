@@ -81,8 +81,20 @@ async function run() {
         res.send(result);
       })
 
+      app.get('/users/admin/:email', verifyJWT, async(req,res)=>{
+        const email = req.params.email;
+        if(req.decoded.email !== email){
+          req.send({admin: false});
+        }
+
+        const query = {email: email};
+        const user = await usersClassCollection.findOne(query);
+        const result = {admin: user?.role === 'admin'}
+        res.send(result);
+      })
+
 // ADMIN RELATED API....
-      app.patch("/users/admin/:id", async(req,res) =>{
+      app.patch("/users/admin/:id", verifyJWT, async(req,res) =>{
         const id = req.params.id;
         const filter = {_id: new ObjectId(id)};
         const updateDoc = {
@@ -106,8 +118,15 @@ async function run() {
       const result = await popularClassCollection.find().toArray();
       res.send(result);
     });
+
+    app.post("/populer-class", async(req, res)=>{
+      const newItem = req.body;
+      const result = await popularClassCollection.insertOne(newItem);
+        res.send(result)
+    })
+
     // selected class api
-    app.get("/selected-class/:email", async(req, res)=>{
+    app.get("/selected-class", verifyJWT, async(req, res)=>{
       const email = req.query.email;
       if(!email){
         res.send([]);
