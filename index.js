@@ -50,7 +50,7 @@ async function run() {
       // JWT.........
       app.post("/jwt", (req,res)=>{
         const user = req.body;
-        const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'})
+        const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '7d'})
         res.send({token});
       })
       const verifyJWT = (req,res,next) =>{
@@ -107,7 +107,7 @@ async function run() {
       res.send(result);
     });
     // selected class api
-    app.get("/selected-class",verifyJWT, async(req, res)=>{
+    app.get("/selected-class/:email", async(req, res)=>{
       const email = req.query.email;
       if(!email){
         res.send([]);
