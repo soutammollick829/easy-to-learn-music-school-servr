@@ -125,6 +125,13 @@ async function run() {
         res.send(result)
     })
 
+    app.delete("/populer-class/:id", verifyJWT, async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await popularClassCollection.deleteOne(query);
+      res.send(result);
+    })
+
     // selected class api
     app.get("/selected-class", verifyJWT, async(req, res)=>{
       const email = req.query.email;
